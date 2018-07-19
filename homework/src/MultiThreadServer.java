@@ -7,8 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class MultiThreadServer implements Runnable{
-    private int port;
     public boolean isRunning;
+    
+    private int port;
     private static int DEFAULT_PORT = 8080;
     private ServerSocket server = null;
     private static ExecutorService executeIt = Executors.newFixedThreadPool(2);
@@ -40,7 +41,7 @@ public class MultiThreadServer implements Runnable{
     public void  run() {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             server = new ServerSocket(port);
-            System.out.println("Main server created");
+            this.log("Main server created");
             isRunning = true;
 
             Thread th =new Thread(){
@@ -50,12 +51,11 @@ public class MultiThreadServer implements Runnable{
                         while (!server.isClosed()) {
                             Socket client = server.accept();
                             executeIt.execute(new MonoThreadServer(client));
-                            System.out.println("Main server accept");
-
+                            this.log("Main server accept");
                         }
                     }catch (SocketException e)
                     {
-                        System.out.println("Socket was closed by main process");
+                        this.log("Socket was closed by main process");
                     }
                     catch (IOException e){
                         e.printStackTrace();
@@ -65,17 +65,17 @@ public class MultiThreadServer implements Runnable{
             th.start();
             while (true) {
                 if (br.ready()) {
-                    System.out.println("Main server found any messages");
+                    this.log("Main server found any messages");
                     String serverCommand = br.readLine();
                     if (serverCommand.equalsIgnoreCase("quit")) {
-                        System.out.println("Main server is closed");
+                        this.log("Main server is closed");
                         stop();
                         break;
                     }
                 }
 
             }
-            System.out.println("Main server stopped");
+            this.log("Main server stopped");
             executeIt.shutdown();
 
         } catch (IOException e) {
@@ -95,4 +95,8 @@ public class MultiThreadServer implements Runnable{
     public void start() {
         executeIt.execute(this);
     }
+    
+    public void log(String message) {
+        System.out.println(message);
+    }    
 }
