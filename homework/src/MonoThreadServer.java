@@ -15,13 +15,13 @@ public class MonoThreadServer implements Runnable {
     public void run() {
         try {
             DataInputStream in = new DataInputStream(clientDialog.getInputStream());
-            System.out.println("DataInputStream created");
+            this.log("DataInputStream created");
             DataOutputStream out = new DataOutputStream(clientDialog.getOutputStream());
-            System.out.println("DataOutputStream created");
+            this.log("DataOutputStream created");
             while (!clientDialog.isClosed()) {
-                System.out.println("MonoThreadServer reading from channel");
+                this.log("MonoThreadServer reading from channel");
                 String reqest = in.readUTF();
-                System.out.println("client message: " + reqest);
+                this.log("client message: " + reqest);
                 if (reqest.equalsIgnoreCase("quit")) {
                     out.writeUTF(reqest + "Ok");
                     Thread.sleep(3000);
@@ -30,7 +30,7 @@ public class MonoThreadServer implements Runnable {
                 out.writeUTF("MonoThreadServer response: " + reqest);
                 out.flush();
             }
-            System.out.println(" MonoThreadServer connection close");
+            this.log(" MonoThreadServer connection close");
             in.close();
             out.close();
             clientDialog.close();
@@ -40,4 +40,9 @@ public class MonoThreadServer implements Runnable {
             e.printStackTrace();
         }
     }
+    
+    public void log(String message) {
+        System.out.println(message);
+    }
+
 }
