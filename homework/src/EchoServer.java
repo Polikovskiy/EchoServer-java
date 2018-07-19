@@ -6,11 +6,12 @@ import java.net.Socket;
 
 public class EchoServer {
     private int port;
-    public boolean isRunning;
     private static int DEFAULT_PORT = 8080;
     private Socket client = null;
     private DataOutputStream out = null;
     private DataInputStream in = null;
+    
+    public boolean isRunning;
 
     public EchoServer(int port) {
         this.port = port;
@@ -32,19 +33,19 @@ public class EchoServer {
     public void start() {
         try (ServerSocket server = new ServerSocket(port)){
             client = server.accept();
-            System.out.println("Connection accepted");
+            this.log("Connection accepted")
             out = new DataOutputStream(client.getOutputStream());
-            System.out.println("DataOutputStream created");
+            this.log("DataOutputStream created")
             in = new DataInputStream(client.getInputStream());
-            System.out.println("DataInputStream created");
+            this.log("DataInputStream created")
             isRunning = true;
             while (!client.isClosed()) {
-                System.out.println("Server reading");
+                this.log("Server reading")
                 String entry = in.readUTF();
-                System.out.println("client message: " + entry);
-                System.out.println("Server try writing to channel");
+                this.log("client message: " + entry)
+                this.log("Server try writing to channel")    
                 if (entry.equalsIgnoreCase("quit")) {
-                    System.out.println("Client inizialized closed the chanel");
+                    this.log("Client inizialized closed the chanel")
                     out.writeUTF("Server reply " + entry + " :OK");
                     out.flush();
                     Thread.sleep(3000);
@@ -64,15 +65,20 @@ public class EchoServer {
     }
 
     public void stop()  {
-        System.out.println("Client disconnected, closing channel & ");
+        this.log("Client disconnected, closing channel & ")
         try {
             in.close();
             out.close();
             client.close();
             isRunning = false;
-            System.out.println("Connection closed - DONE");
+            this.log("Connection closed - DONE")
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
+    public void log(String message) {
+        System.out.println(message)
+    }
+    
 }
